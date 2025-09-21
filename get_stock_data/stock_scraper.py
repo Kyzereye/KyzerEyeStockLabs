@@ -216,6 +216,109 @@ class StockDataScraper:
                 saved_files.append(combined_filepath)
         
         return saved_files
+    
+    def save_to_csv_append(self, df, symbol, filename=None):
+        """Append new data to existing CSV file (preserves existing data)"""
+        if filename is None:
+            filename = f"{symbol}_historical_data.csv"
+        
+        # Create full path in output directory
+        filepath = os.path.join(self.output_dir, filename)
+        
+        # Check if file exists
+        if os.path.exists(filepath):
+            # Read existing data
+            existing_df = pd.read_csv(filepath)
+            existing_df['Date'] = pd.to_datetime(existing_df['Date']).dt.date
+            
+            # Filter out dates that already exist
+            new_df = df[~df['Date'].isin(existing_df['Date'])]
+            
+            if new_df.empty:
+                print(f"No new data to append for {symbol}")
+                return filepath
+            
+            # Combine existing and new data
+            combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+            combined_df = combined_df.sort_values('Date', ascending=False)
+            combined_df.to_csv(filepath, index=False)
+            print(f"Appended {len(new_df)} new rows to {filepath}")
+        else:
+            # File doesn't exist, create new one
+            df.to_csv(filepath, index=False)
+            print(f"Created new file {filepath}")
+        
+        return filepath
+    
+    def save_multiple_to_csv_append(self, stock_data_dict, combined_file=None):
+        """
+        Append new data to CSV files (preserves existing data)
+        
+        Args:
+            stock_data_dict (dict): Dictionary with symbol as key and DataFrame as value
+            combined_file (str): Optional filename for combined CSV file
+            
+        Returns:
+            list: List of updated filenames
+        """
+        updated_files = []
+        
+        # Append to individual files
+        for symbol, df in stock_data_dict.items():
+            filename = self.save_to_csv_append(df, symbol)
+            updated_files.append(filename)
+        
+        # Handle combined file
+        if combined_file:
+            combined_filepath = os.path.join(self.output_dir, combined_file)
+            
+            if os.path.exists(combined_filepath):
+                # Read existing combined data
+                existing_df = pd.read_csv(combined_filepath)
+                existing_df['Date'] = pd.to_datetime(existing_df['Date']).dt.date
+                
+                # Prepare new combined data
+                new_combined_data = []
+                for symbol, df in stock_data_dict.items():
+                    df_copy = df.copy()
+                    df_copy['Symbol'] = symbol
+                    new_combined_data.append(df_copy)
+                
+                if new_combined_data:
+                    new_combined_df = pd.concat(new_combined_data, ignore_index=True)
+                    new_combined_df['Date'] = pd.to_datetime(new_combined_df['Date']).dt.date
+                    
+                    # Filter out existing combinations of symbol + date
+                    existing_combined = existing_df[['Symbol', 'Date']]
+                    new_combined_df = new_combined_df[~new_combined_df[['Symbol', 'Date']].apply(tuple, axis=1).isin(existing_combined.apply(tuple, axis=1))]
+                    
+                    if not new_combined_df.empty:
+                        # Combine and sort
+                        final_combined = pd.concat([existing_df, new_combined_df], ignore_index=True)
+                        final_combined = final_combined.sort_values(['Symbol', 'Date'], ascending=[True, False])
+                        final_combined.to_csv(combined_filepath, index=False)
+                        print(f"Appended {len(new_combined_df)} new rows to {combined_filepath}")
+                    else:
+                        print(f"No new data to append to {combined_filepath}")
+                else:
+                    print(f"No new data to append to {combined_filepath}")
+            else:
+                # Create new combined file
+                combined_data = []
+                for symbol, df in stock_data_dict.items():
+                    df_copy = df.copy()
+                    df_copy['Symbol'] = symbol
+                    combined_data.append(df_copy)
+                
+                if combined_data:
+                    combined_df = pd.concat(combined_data, ignore_index=True)
+                    combined_df = combined_df.sort_values(['Symbol', 'Date'], ascending=[True, False])
+                    combined_df.to_csv(combined_filepath, index=False)
+                    print(f"Created new combined file {combined_filepath}")
+            
+            updated_files.append(combined_filepath)
+        
+        return updated_files
 
 def main():
     """Example usage of the Yahoo Finance scraper"""
