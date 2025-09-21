@@ -3,8 +3,9 @@ Main Flask application
 """
 from flask import Flask, jsonify
 from flask_cors import CORS
-from config import config
+from app_config import config
 from routes.stock_routes import stock_bp
+from routes.indicators_routes import indicators_bp
 import logging
 
 # Configure logging
@@ -23,6 +24,7 @@ def create_app(config_name='default'):
     
     # Register blueprints
     app.register_blueprint(stock_bp)
+    app.register_blueprint(indicators_bp)
     
     # Health check endpoint
     @app.route('/health')
@@ -52,6 +54,14 @@ def create_app(config_name='default'):
                     'fetch_all_data': 'POST /api/stocks/fetch-all',
                     'get_latest_data': 'GET /api/stocks/latest',
                     'get_stock_info': 'GET /api/stocks/<symbol>/info'
+                },
+                'indicators': {
+                    'get_enabled_indicators': 'GET /api/indicators/',
+                    'get_indicators_config': 'GET /api/indicators/config',
+                    'get_symbol_indicators': 'GET /api/indicators/<symbol>',
+                    'calculate_indicators': 'POST /api/indicators/<symbol>/calculate',
+                    'calculate_all_indicators': 'POST /api/indicators/calculate-all',
+                    'get_latest_indicators': 'GET /api/indicators/latest/<symbol>'
                 }
             },
             'example_requests': {

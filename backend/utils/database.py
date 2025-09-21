@@ -2,7 +2,7 @@
 Database connection utilities
 """
 import pymysql
-from config import config
+from app_config import config
 import logging
 
 logger = logging.getLogger(__name__)
