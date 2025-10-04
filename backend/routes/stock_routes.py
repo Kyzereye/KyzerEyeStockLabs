@@ -58,13 +58,27 @@ def get_stock_data(symbol):
         # Get query parameters
         start_date = request.args.get('start_date')
         end_date = request.args.get('end_date')
+        days = request.args.get('days')
+        include_ema = request.args.get('include_ema', 'false').lower() == 'true'
         
         # Convert string dates to date objects if provided
-        from datetime import datetime
+        from datetime import datetime, timedelta
         start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else None
         end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date() if end_date else None
         
-        data = service.get_stock_data(symbol.upper(), start_date_obj, end_date_obj)
+        # If days parameter is provided and > 0, calculate start_date
+        if days and not start_date_obj:
+            days_int = int(days)
+            if days_int > 0:  # Only limit data if days > 0
+                end_date_obj = datetime.now().date() if not end_date_obj else end_date_obj
+                start_date_obj = end_date_obj - timedelta(days=days_int)
+            # If days = 0, we want all available data, so don't set start_date_obj
+        
+        # Use appropriate method based on whether EMA is requested
+        if include_ema:
+            data = service.get_stock_data_with_ema(symbol.upper(), start_date_obj, end_date_obj)
+        else:
+            data = service.get_stock_data(symbol.upper(), start_date_obj, end_date_obj)
         
         return jsonify({
             'success': True,

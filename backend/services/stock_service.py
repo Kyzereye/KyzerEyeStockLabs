@@ -178,6 +178,47 @@ class StockService:
         
         return self.db.execute_query(query, params)
     
+    def get_stock_data_with_ema(self, symbol: str, start_date: date = None, end_date: date = None) -> List[Dict]:
+        """Get stock data with EMA calculations"""
+        symbol_id = self.get_symbol_id(symbol)
+        if not symbol_id:
+            return []
+        
+        query = """
+            SELECT * FROM daily_stock_data 
+            WHERE symbol_id = %s
+        """
+        params = [symbol_id]
+        
+        if start_date:
+            query += " AND date >= %s"
+            params.append(start_date)
+        
+        if end_date:
+            query += " AND date <= %s"
+            params.append(end_date)
+        
+        query += " ORDER BY date ASC"  # Need ascending order for EMA calculation
+        
+        data = self.db.execute_query(query, params)
+        
+        if not data:
+            return []
+        
+        # Convert to DataFrame for EMA calculation
+        df = pd.DataFrame(data)
+        df['close'] = df['close'].astype(float)
+        
+        # Calculate EMAs
+        df['ema_21'] = df['close'].ewm(span=21, adjust=False).mean()
+        df['ema_50'] = df['close'].ewm(span=50, adjust=False).mean()
+        
+        # Convert back to list of dicts and reverse order
+        result = df.to_dict('records')
+        result.reverse()  # Return in descending order
+        
+        return result
+    
     def get_all_symbols(self) -> List[Dict]:
         """Get all stock symbols from database"""
         query = "SELECT * FROM stock_symbols ORDER BY symbol"

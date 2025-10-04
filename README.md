@@ -28,12 +28,16 @@ KyzeEyeStockLabs/
 │   └── README.md            # Detailed module documentation
 ├── backend/                 # Flask API backend
 │   ├── app.py              # Main Flask application
-│   ├── config.py           # Configuration settings
+│   ├── app_config.py       # Configuration settings
 │   ├── requirements.txt    # Backend dependencies
 │   ├── test_api.py         # API test script
+│   ├── test_wyckoff_api.py # Wyckoff API test script
+│   ├── calculate_indicators.py # Technical indicators calculator
+│   ├── generate_wyckoff_report.py # Wyckoff analysis report generator
 │   ├── models/             # Database models
-│   ├── services/           # Business logic
-│   ├── routes/             # API endpoints
+│   ├── services/           # Business logic (stock, indicators, wyckoff)
+│   ├── routes/             # API endpoints (stocks, indicators, wyckoff)
+│   ├── config/             # Configuration files (indicators)
 │   └── utils/              # Database utilities
 ├── sql_queries.sql         # Database schema
 ├── remove_adj_close_column.sql  # Database migration script
@@ -50,6 +54,8 @@ KyzeEyeStockLabs/
 - **🗄️ MySQL Database Integration**: Store data in MySQL database for efficient querying
 - **🌐 RESTful API**: Flask-based API for programmatic data access
 - **🔄 Smart Updates**: Update system that adds only new data (no duplicates or overwrites)
+- **📈 Technical Indicators**: Pre-calculated indicators (RSI, EMA, SMA, ATR, MACD, Bollinger Bands, etc.)
+- **🎯 Wyckoff Method Analysis**: Advanced price action and volume analysis for institutional trading patterns
 - **🛡️ Error Handling**: Robust error handling with detailed logging and failure reporting
 - **⚡ Rate Limiting**: Built-in delays to respect API limits and be a good citizen
 - **🧹 Data Cleaning**: Automatic data cleaning and formatting for analysis-ready output
@@ -163,6 +169,68 @@ python3 test_api.py
 - `GET /api/stocks/AAPL` - Get stock data for a symbol
 - `POST /api/stocks/AAPL/fetch` - Fetch fresh data for a symbol
 - `GET /api/stocks/latest` - Get latest data for all stocks
+
+## 📈 Technical Indicators
+
+**Calculate technical indicators for all stocks:**
+```bash
+cd backend
+python3 calculate_indicators.py
+```
+
+**Calculate for specific stock:**
+```bash
+python3 calculate_indicators.py AAPL
+```
+
+**Configure indicator periods:**
+Edit `backend/config/indicators_config.py` to customize RSI, EMA, SMA periods, etc.
+
+**Available indicators:**
+- RSI (Relative Strength Index)
+- EMA (Exponential Moving Average) - periods: 11, 21, 50, 200
+- SMA (Simple Moving Average)
+- ATR (Average True Range)
+- MACD (Moving Average Convergence Divergence)
+- Bollinger Bands
+- Stochastic Oscillator
+- Williams %R
+- CCI (Commodity Channel Index)
+- MFI (Money Flow Index)
+
+## 🎯 Wyckoff Method Analysis
+
+**Generate comprehensive Wyckoff analysis report:**
+```bash
+cd backend
+python3 generate_wyckoff_report.py
+```
+
+**Wyckoff Analysis Features:**
+- **Phase Detection**: Identifies Accumulation, Distribution, Markup, and Markdown phases
+- **Volume-Price Analysis**: Analyzes volume patterns relative to price action
+- **Support/Resistance Levels**: Identifies key price levels based on pivot points
+- **Trading Signals**: Generates BUY/SELL/HOLD signals based on Wyckoff principles
+- **Wyckoff Score**: Overall analysis score (0-100) with letter grades
+
+**API Endpoints for Wyckoff Analysis:**
+- `GET /api/wyckoff/` - Wyckoff API information
+- `POST /api/wyckoff/analyze-all` - Analyze all stocks using Wyckoff Method
+- `POST /api/wyckoff/<symbol>/analyze` - Analyze specific symbol
+- `GET /api/wyckoff/report` - Get quick Wyckoff report
+- `GET /api/wyckoff/<symbol>/phases` - Get Wyckoff phases for symbol
+- `GET /api/wyckoff/<symbol>/signals` - Get trading signals for symbol
+
+**Example Wyckoff Analysis Output:**
+```
+📊 TSLA
+  Current Price: $426.07
+  Current Phase: Markup (Confidence: 90.0%)
+  Wyckoff Score: 73.9/100 (Grade: B)
+  Primary Signal: BUY
+  Volume Analysis: Neutral volume-price relationship
+  Reasoning: Strong uptrend with volume confirmation
+```
 
 ## 📊 Data Format
 

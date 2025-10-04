@@ -66,6 +66,37 @@ INSERT IGNORE INTO stock_symbols (symbol, company_name) VALUES
 ('MSFT', 'Microsoft Corporation'),
 ('TSLA', 'Tesla Inc.'),
 ('DOMO', 'Domo Inc.');
+INSERT IGNORE INTO stock_symbols (symbol, company_name) VALUES
+('MMM', '3M Co.'),
+('AMZN', 'Amazon.com, Inc.'),
+('AXP', 'American Express Co.'),
+('AMGN', 'Amgen Inc.'),
+('AAPL', 'Apple Inc.'),
+('BA', 'The Boeing Co.'),
+('CAT', 'Caterpillar Inc.'),
+('CVX', 'Chevron Corp.'),
+('CSCO', 'Cisco Systems, Inc.'),
+('KO', 'The Coca-Cola Co.'),
+('CRM', 'Salesforce, Inc.'),
+('DIS', 'The Walt Disney Co.'),
+('GS', 'The Goldman Sachs Group, Inc.'),
+('HD', 'The Home Depot, Inc.'),
+('HON', 'Honeywell International Inc.'),
+('IBM', 'International Business Machines Corp.'),
+('JNJ', 'Johnson & Johnson'),
+('JPM', 'JPMorgan Chase & Co.'),
+('MCD', 'McDonald''s Corp.'),
+('MRK', 'Merck & Co., Inc.'),
+('MSFT', 'Microsoft Corp.'),
+('NKE', 'Nike, Inc.'),
+('NVDA', 'Nvidia Corporation'),
+('PG', 'The Procter & Gamble Co.'),
+('SHW', 'The Sherwin-Williams Company'),
+('TRV', 'The Travelers Companies, Inc.'),
+('UNH', 'UnitedHealth Group Inc.'),
+('VZ', 'Verizon Communications Inc.'),
+('V', 'Visa Inc.'),
+('WMT', 'Walmart Inc.');
 
 -- Useful queries for reference:
 

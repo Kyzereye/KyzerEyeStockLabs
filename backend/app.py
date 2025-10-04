@@ -6,6 +6,10 @@ from flask_cors import CORS
 from app_config import config
 from routes.stock_routes import stock_bp
 from routes.indicators_routes import indicators_bp
+from routes.wyckoff_routes import wyckoff_bp
+from routes.backtest_routes import backtest_bp
+from routes.stop_loss_routes import stop_loss_bp
+from routes.ema_routes import ema_bp
 import logging
 
 # Configure logging
@@ -25,6 +29,10 @@ def create_app(config_name='default'):
     # Register blueprints
     app.register_blueprint(stock_bp)
     app.register_blueprint(indicators_bp)
+    app.register_blueprint(wyckoff_bp)
+    app.register_blueprint(backtest_bp)
+    app.register_blueprint(stop_loss_bp)
+    app.register_blueprint(ema_bp)
     
     # Health check endpoint
     @app.route('/health')
@@ -62,6 +70,22 @@ def create_app(config_name='default'):
                     'calculate_indicators': 'POST /api/indicators/<symbol>/calculate',
                     'calculate_all_indicators': 'POST /api/indicators/calculate-all',
                     'get_latest_indicators': 'GET /api/indicators/latest/<symbol>'
+                },
+                'wyckoff': {
+                    'get_wyckoff_info': 'GET /api/wyckoff/',
+                    'analyze_all_stocks': 'POST /api/wyckoff/analyze-all',
+                    'analyze_symbol': 'POST /api/wyckoff/<symbol>/analyze',
+                    'get_report': 'GET /api/wyckoff/report',
+                    'get_phases': 'GET /api/wyckoff/<symbol>/phases',
+                    'get_signals': 'GET /api/wyckoff/<symbol>/signals'
+                },
+                'backtest': {
+                    'get_backtest_info': 'GET /api/backtest/',
+                    'run_backtest': 'POST /api/backtest/run',
+                    'get_results': 'GET /api/backtest/results',
+                    'get_symbol_backtest': 'GET /api/backtest/<symbol>',
+                    'get_reports': 'GET /api/backtest/reports',
+                    'get_report': 'GET /api/backtest/reports/<filename>'
                 }
             },
             'example_requests': {
